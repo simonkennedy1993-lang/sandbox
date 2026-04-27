@@ -1,0 +1,32 @@
+name: FFmpeg Workflow
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows you to run this manually from the Actions tab
+
+jobs:
+  process-media:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Check out your repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Update package list and install ffmpeg
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      # 3. Verify installation
+      - name: Verify FFmpeg
+        run: ffmpeg -version
+
+      # 4. Example usage command
+      # Replace this with your specific video processing logic
+      - name: Run a sample command
+        run: |
+          echo "FFmpeg is ready to use!"
+          # Example: ffmpeg -i input.mp4 output.avi
