@@ -23,32 +23,36 @@ jobs:
           sudo apt-get install -y p7zip-full ffmpeg
 
       - name: Extract and Process
+        working-directory: main/dl
         shell: bash
         run: |
-          cd main/dl
+          # Use the input directly
           ZIP_FILE="${{ github.event.inputs.zip_filename }}"
           
-          # This removes the .mp4.zip suffix to get the base name (e.g., "B")
+          # Remove .mp4.zip to get the base prefix (e.g., "B")
           BASE_NAME="${ZIP_FILE%.mp4.zip}"
           
-          # Extract the file
+          # Extract the zip
           7z x "$ZIP_FILE"
           
-          # Slice the video using the dynamic base name for output files
-          # This results in: B_part_000.mp4, B_part_001.mp4, etc.
+          # Process with ffmpeg
+          # Outputs: B_part_000.mp4, B_part_001.mp4, etc.
           ffmpeg -i "${BASE_NAME}.mp4" -c copy -f segment -segment_time 1200 -reset_timestamps 1 "${BASE_NAME}_part_%03d.mp4"
 
       - name: Commit and Push
+        working-directory: main/dl
         run: |
-          cd main/dl
+          # Set up git identity
           git config user.name "GitHub Action Bot"
           git config user.email "bot@users.noreply.github.com"
           
-          # Dynamically add the parts associated with this specific input
-          BASE_NAME="${{ github.event.inputs.zip_filename }}"
-          BASE_NAME="${BASE_NAME%.mp4.zip}"
+          # Prepare the prefix for the git add command
+          ZIP_FILE="${{ github.event.inputs.zip_filename }}"
+          BASE_NAME="${ZIP_FILE%.mp4.zip}"
           
+          # Add only the parts generated in this run
           git add "${BASE_NAME}_part_"*.mp4
           
+          # Commit and push
           git commit -m "Add processed parts for ${BASE_NAME} [skip ci]" || echo "No changes to commit"
           git push
