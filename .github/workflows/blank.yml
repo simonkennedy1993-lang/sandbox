@@ -1,32 +1,54 @@
-name: FFmpeg Workflow
+name: Process ZIP to Parts
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch: # Allows you to run this manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      zip_filename:
+        description: 'Name of the zip file in main/dl/ (e.g., B.mp4.zip)'
+        required: true
+        type: string
 
 jobs:
   process-media:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      # 1. Check out your repository code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Update package list and install ffmpeg
-      - name: Install FFmpeg
+      - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          sudo apt-get install -y p7zip-full ffmpeg
 
-      # 3. Verify installation
-      - name: Verify FFmpeg
-        run: ffmpeg -version
-
-      # 4. Example usage command
-      # Replace this with your specific video processing logic
-      - name: Run a sample command
+      - name: Extract and Process
+        shell: bash
         run: |
-          echo "FFmpeg is ready to use!"
-          # Example: ffmpeg -i input.mp4 output.avi
+          cd main/dl
+          ZIP_FILE="${{ github.event.inputs.zip_filename }}"
+          
+          # This removes the .mp4.zip suffix to get the base name (e.g., "B")
+          BASE_NAME="${ZIP_FILE%.mp4.zip}"
+          
+          # Extract the file
+          7z x "$ZIP_FILE"
+          
+          # Slice the video using the dynamic base name for output files
+          # This results in: B_part_000.mp4, B_part_001.mp4, etc.
+          ffmpeg -i "${BASE_NAME}.mp4" -c copy -f segment -segment_time 1200 -reset_timestamps 1 "${BASE_NAME}_part_%03d.mp4"
+
+      - name: Commit and Push
+        run: |
+          cd main/dl
+          git config user.name "GitHub Action Bot"
+          git config user.email "bot@users.noreply.github.com"
+          
+          # Dynamically add the parts associated with this specific input
+          BASE_NAME="${{ github.event.inputs.zip_filename }}"
+          BASE_NAME="${BASE_NAME%.mp4.zip}"
+          
+          git add "${BASE_NAME}_part_"*.mp4
+          
+          git commit -m "Add processed parts for ${BASE_NAME} [skip ci]" || echo "No changes to commit"
+          git push
