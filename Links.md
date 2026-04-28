@@ -2,6 +2,12 @@
 > Click on any link below to start downloading directly.<br><br/>
 
 
+### 📅 2026-04-28 10:43 IR
+- 🎬 [Tips For Analyzing Delphi Binaries in IDA (Danabot).mp4](https://github.com/louierussel988-web/sandbox/raw/main/dl/Tips%20For%20Analyzing%20Delphi%20Binaries%20in%20IDA%20%28Danabot%29.mp4) `11.6MB`
+
+---
+
+
 ### 📅 2026-04-28 10:17 IR
 - 🎬 [DROPPING LIKE DONIMOES – YouTube’s AI Demonetization is Out of Control (PLEASE FIX THIS, YOUTUBE!).mp4](https://github.com/louierussel988-web/sandbox/raw/main/dl/DROPPING%20LIKE%20DONIMOES%20%E2%80%93%20YouTube%E2%80%99s%20AI%20Demonetization%20is%20Out%20of%20Control%20%28PLEASE%20FIX%20THIS%2C%20YOUTUBE%21%29.mp4) `20.9MB`
 
