@@ -36,7 +36,7 @@ jobs:
           7z x "$ZIP_FILE"
           
           # Process with ffmpeg
-          ffmpeg -i "${BASE_NAME}.mp4" -c copy -f segment -segment_time 00:07:00 -reset_timestamps 1 "${BASE_NAME}_part_%03d.mp4"
+          ffmpeg -i "${BASE_NAME}.mp4" -c copy -f segment -segment_time 00:20:00 -reset_timestamps 1 "${BASE_NAME}_part_%03d.mp4"
 
       - name: Commit and Push
         working-directory: dl
